@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { Employee } from "@prisma/client";
-import { ColumnsType } from "ant-design-vue/es/table";
+import { Employee } from "@prisma/client"
+import { ColumnsType } from "ant-design-vue/es/table"
+import { useEmployeesStore } from "@/stores"
+
+const { data } = useEmployeesStore()
 
 const COLUMNS: ColumnsType<Employee> = [
   {
@@ -26,7 +29,8 @@ const COLUMNS: ColumnsType<Employee> = [
     Add
   </a-button>
   <a-table
-      columns={ COLUMNS }
+    :dataSource="data"
+    :columns="COLUMNS"
   />
 </template>
 
