@@ -1,6 +1,5 @@
 <template>
   <a-row justify="center">
-    {{ formState }}
     <a-card title="Register" style="width: 30rem">
       <a-form
         :model="formState"
@@ -57,41 +56,32 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue"
-import { useAuthStore } from '@/stores';
+import { reactive } from 'vue'
+import { useAuthStore }  from '@/stores'
+import { User }      from '@/types'
+import router            from "@/router"
 
-//const { user } = useUserAuthStore();
+type RegisterData = Omit<User, 'id'> & {confirmPassword: string}
 
-interface FormState {
-  name: string;
-  email: string;
-  password: string;
-  //confirmPassword: string;
-}
-
-const formState = reactive<FormState>({
+const formState = reactive<RegisterData>({
   name: '',
   email: '',
   password: '',
-  //confirmPassword: ''
+  confirmPassword: '',
 })
 
-const register = (values: any) => {
-  //console.log(values)
-  //console.log({...formState})
-  const authStore = useAuthStore();
+const register = (values: RegisterData) => {
+  const authStore = useAuthStore()
 
-  //return authStore.login(username, password)
-  //    .catch(error => setErrors({ apiError: error }));
-
-  //const data = {...formState}
   try {
     authStore.register(formState)
+    console.log('registered')
+    router.push({ path: '/' })
   } catch(error) {
+    //setErrors({ apiError: error })
     console.log(error)
   }
 }
-
 </script>
 
 <style>
