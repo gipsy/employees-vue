@@ -1,25 +1,14 @@
 <script setup lang="ts">
-//import { Employee } from "@prisma/client"
 import { Employee }                        from "@/types"
 import { ColumnsType }                     from "ant-design-vue/es/table"
 import { useAuthStore, useEmployeesStore } from "@/stores"
 import { watchEffect }                     from "vue"
 import { storeToRefs }                     from "pinia"
-import router                              from "@/router"
-import { isLoggedIn }                      from "@/utils/auth"
 
 const employeesStore = useEmployeesStore()
 
-const authStore = useAuthStore()
+const { employees, loadingEmployees } = storeToRefs(employeesStore)
 
-const { employees, loading } = storeToRefs(employeesStore)
-const { user, isAuthenticated } = storeToRefs(authStore)
-//console.log('Auth store:', toRaw(auth.user))
-//console.log('Employees store:', toRaw(employees.employeesStore))
-
-if (!isLoggedIn()) {
-  router.push({ name: 'login' })
-}
 watchEffect(async (onCleanup) => {
   //const { response, cancel } = doAsyncWork(id.value)
   //// `cancel` will be called if `id` changes
@@ -69,7 +58,7 @@ const COLUMNS = [
     <a-table
       :dataSource="employees"
       :columns="COLUMNS"
-      :loading="loading"
+      :loading="loadingEmployees"
     />
   </a-space>
 </template>

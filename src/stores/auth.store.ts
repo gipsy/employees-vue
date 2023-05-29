@@ -1,32 +1,29 @@
 import { defineStore } from 'pinia'
 import { BASE_URL }    from '@/constants'
-import { User }        from '@/types'
-import { ref }         from "vue";
+import { User }                  from '@/types'
+import { reactive, toRefs } from "vue";
 
 type ResponseData = User & { token: string };
 
 interface InitialState {
   user: User & { token: string } | null,
-  isAuthenticated: boolean,
-  loading: boolean,
+  isAuthorized: boolean,
+  loadingAuth: boolean,
   error: string
 }
 
 const initialState: InitialState = {
   user: null,
-  isAuthenticated: false,
-  loading: false,
+  isAuthorized: false,
+  loadingAuth: false,
   error: ''
 }
 
 export const useAuthStore = defineStore('authStore', () => {
-  const user = ref({})
-  const loading = ref(false)
-  const isAuthenticated = ref(false)
-  const error = ref('')
+  const state = reactive<InitialState>(initialState)
   
   async function login(formData: User) {
-    loading.value = true
+    state.loadingAuth = true
     console.log('login', formData)
     const res = await fetch<ResponseData, User>(`${BASE_URL}/user/login`, {
       method: 'POST',
@@ -38,16 +35,17 @@ export const useAuthStore = defineStore('authStore', () => {
   
     const data = await res.json()
     if (data) {
-      user.value = data
+      state.user = data
       localStorage.setItem('token', data.token)
-      isAuthenticated.value = true
+      state.isAuthorized = true
     } else {
-      error.value = data.error.message
+      state.error = data.error.message
     }
+    state.loadingAuth = false
   }
   
   async function register(formData: User) {
-    loading.value = true
+    state.loadingAuth = true
     const res = await fetch<ResponseData, User>(`${BASE_URL}/user/register`, {
       method: 'POST',
       headers: {
@@ -58,12 +56,26 @@ export const useAuthStore = defineStore('authStore', () => {
     
     const data = await res.json()
     if (data) {
-      user.value = data
+      state.user = data
       localStorage.setItem('token', data.token)
-      isAuthenticated.value = true
+      state.isAuthorized = true
     } else {
-      error.value = data.error.message
+      state.error = data.error.message
     }
+    state.loadingAuth = false
+  }
+  
+  async function current() {
+    const res = await fetch(`${BASE_URL}/user/current`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    const data = await res.json()
+    state.user = data
+    state.isAuthorized = true
+    console.log(state.isAuthorized)
   }
   
   async function logout() {
@@ -79,16 +91,16 @@ export const useAuthStore = defineStore('authStore', () => {
     //})
     localStorage.removeItem('token')
     console.log('logout')
+    state.isAuthorized = false
     //loading.value = false
   }
   
   return {
-    user,
-    loading,
+    state,
     login,
     logout,
-    register
-    //getUserData
+    register,
+    current,
   }
 })
 

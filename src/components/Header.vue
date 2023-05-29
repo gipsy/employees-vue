@@ -9,7 +9,7 @@
       </router-link>
     </a-space>
 
-    <a-space v-if="!isLoggedIn()">
+    <a-space v-if="!state.isAuthorized">
       <router-link to="/register">
         <a-button type="text">
           <template #icon><UserOutlined /></template>
@@ -42,14 +42,17 @@ import {
   LogoutOutlined,
   UserOutlined }        from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores'
-import { isLoggedIn }   from '@/utils/auth'
 import router           from '@/router'
+import { ref }          from "vue";
 
-const { logout } = useAuthStore()
+const { logout, state } = useAuthStore()
+const localAuth = ref(true)
 
 const onLogout = async () => {
   await logout()
+
   await router.push({ name: 'login' })
+  localAuth.value = false
 }
 
 </script>
