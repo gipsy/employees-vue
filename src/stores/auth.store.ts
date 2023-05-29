@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { BASE_URL }    from '@/constants'
 import { User }        from '@/types'
-import router          from "@/router";
+import { ref }         from "vue";
 
-type ResponseLoginData = User & { token: string };
+type ResponseData = User & { token: string };
 
 interface InitialState {
   user: User & { token: string } | null,
@@ -19,73 +19,132 @@ const initialState: InitialState = {
   error: ''
 }
 
-export const useAuthStore = defineStore({
-  id: 'auth',
-  state: () => {
-    return initialState
-  },
-  actions: {
-    async login(formData: User) {
-      try {
-        this.loading = true
-        const response = await fetch<ResponseLoginData, User>(`${BASE_URL}/user/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify( formData )
-        })
-        const data = await response.json()
-        this.user = data
-        this.isAuthenticated = true
-        if (data.token) {
-          localStorage.setItem('token', data.token)
-        }
-        this.loading = false
-        await router.push({ path: '/'})
-      } catch(error) {
-        console.log(error)
-        this.loading = false
-      }
-    },
-    async register(formData: User) {
-      try {
-        this.loading = true
-        const response = await fetch<ResponseLoginData, User>(`${BASE_URL}/user/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify( formData ),
-        })
-        const data = await response.json()
-        this.user = data
-        if (data.token) {
-          localStorage.setItem('token', data.token)
-        }
-        this.loading = false
-      } catch(error) {
-        console.log(error)
-        this.loading = false
-      }
-    },
-    async current() {
-      try {
-        this.loading = true
-        await fetch<ResponseLoginData, void>(`${BASE_URL}/current/user`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        this.loading = false
-      } catch(error) {
-        console.log(error)
-        this.loading = false
-      }
-    },
-    logout: () => initialState,
+export const useAuthStore = defineStore('authStore', () => {
+  const user = ref({})
+  const loading = ref(false)
+  const isAuthenticated = ref(false)
+  const error = ref('')
+  
+  async function login(formData: User) {
+    loading.value = true
+    console.log('login', formData)
+    const res = await fetch<ResponseData, User>(`${BASE_URL}/user/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( formData )
+    })
+  
+    const data = await res.json()
+    if (data) {
+      user.value = data
+      localStorage.setItem('token', data.token)
+      isAuthenticated.value = true
+    } else {
+      error.value = data.error.message
+    }
+  }
+  
+  async function register(formData: User) {
+    loading.value = true
+    const res = await fetch<ResponseData, User>(`${BASE_URL}/user/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( formData )
+    })
+    
+    const data = await res.json()
+    if (data) {
+      user.value = data
+      localStorage.setItem('token', data.token)
+      isAuthenticated.value = true
+    } else {
+      error.value = data.error.message
+    }
+  }
+  
+  return {
+    user,
+    loading,
+    login,
+    register
+    //getUserData
   }
 })
+
+//export const useAuthStore = defineStore({
+//  id: 'auth',
+//  state: () => {
+//    return initialState
+//  },
+//  actions: {
+//    async login(formData: User) {
+//      try {
+//        this.loading = true
+//        const response = await fetch<ResponseLoginData, User>(`${BASE_URL}/user/login`, {
+//          method: 'POST',
+//          headers: {
+//            'Content-Type': 'application/json'
+//          },
+//          body: JSON.stringify( formData )
+//        })
+//        const data = await response.json()
+//        this.user = data
+//        this.isAuthenticated = true
+//        if (data.token) {
+//          localStorage.setItem('token', data.token)
+//        }
+//        this.loading = false
+//        await router.push({ path: '/'})
+//      } catch(error) {
+//        console.log(error)
+//        this.loading = false
+//      }
+//    },
+//    async register(formData: User) {
+//      try {
+//        this.loading = true
+//        const response = await fetch<ResponseLoginData, User>(`${BASE_URL}/user/register`, {
+//          method: 'POST',
+//          headers: {
+//            'Content-Type': 'application/json'
+//          },
+//          body: JSON.stringify( formData ),
+//        })
+//        const data = await response.json()
+//        this.user = data
+//        if (data.token) {
+//          localStorage.setItem('token', data.token)
+//        }
+//        this.loading = false
+//      } catch(error) {
+//        console.log(error)
+//        this.loading = false
+//      }
+//    },
+//    async current() {
+//      try {
+//        this.loading = true
+//        await fetch<ResponseLoginData, void>(`${BASE_URL}/current/user`, {
+//          method: 'GET',
+//          headers: {
+//            'Authorization': `Bearer ${localStorage.getItem('token')}`
+//          }
+//        })
+//        this.loading = false
+//      } catch(error) {
+//        console.log(error)
+//        this.loading = false
+//      }
+//    },
+//    logout: () => initialState,
+//  },
+//  getters:{
+//    isAuth: (state) => state.user !== null
+//  }
+//})
 
 

@@ -3,7 +3,7 @@ import { defineStore }           from 'pinia'
 import { BASE_URL }              from '../constants'
 import { Employee }              from "@/types";
 
-export const useEmployeesStore = defineStore('employees',() => {
+export const useEmployeesStore = defineStore('employeesStore',() => {
   const employees = ref([])
   const loading = ref(false)
   const error = ref('')
@@ -35,6 +35,7 @@ export const useEmployeesStore = defineStore('employees',() => {
     await fetch(`${BASE_URL}/employees/add`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       body: JSON.stringify( formData )

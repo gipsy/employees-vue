@@ -9,14 +9,16 @@
       </router-link>
     </a-space>
 
-    <a-space>
-      <router-link to="/register">
-        <a-button type="default">Register</a-button>
-      </router-link>
-      <router-link to="/login">
-        <a-button type="default">Login</a-button>
-      </router-link>
-    </a-space>
+    <template v-cloak>
+      <a-space v-if="$route.path !== '/register' && $route.path !== '/login'">
+        <router-link to="/register">
+          <a-button type="default">Register</a-button>
+        </router-link>
+        <router-link to="/login">
+          <a-button type="default">Login</a-button>
+        </router-link>
+      </a-space>
+    </template>
   </a-layout-header>
 </template>
 
@@ -26,6 +28,9 @@ import { TeamOutlined } from '@ant-design/icons-vue'
 </script>
 
 <style lang="scss">
+[v-cloak]{
+  display: none;
+}
 .header {
   padding: 20px 0;
   display: flex;

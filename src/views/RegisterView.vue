@@ -70,13 +70,12 @@ const formState = reactive<RegisterData>({
   confirmPassword: '',
 })
 
-const register = (values: RegisterData) => {
+const register = async (values: RegisterData) => {
   const authStore = useAuthStore()
 
   try {
-    authStore.register(formState)
-    console.log('registered')
-    router.push({ path: '/' })
+    await authStore.register(formState)
+    await router.push({ path: '/' })
   } catch(error) {
     //setErrors({ apiError: error })
     console.log(error)

@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 const { params } = useRoute()
 
-console.log(params)
+const Statuses: Record<string, string> = {
+  created: "User created successfully",
+  updated: "User updated successfully",
+  deleted: "User deleted successfully"
+}
+
 </script>
 
 <template>
@@ -12,13 +18,14 @@ console.log(params)
     style="width: 100%"
   >
     <a-result
-      :status="status ? 'success' : 404"
-      :title="status ? Statuses[status] : 'Not found'"
-    />
+      :status="params.status ? 'success' : 404"
+      :title="params.status ? Statuses[params.status] : 'Not found'"
+    >
       <template #extra>
-        <Button key="dashboard">
+        <a-button key="dashboard">
           <RouterLink to='/'>To main</RouterLink>
-        </Button>
+        </a-button>
       </template>
+    </a-result>
   </a-row>
 </template>

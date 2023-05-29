@@ -2,8 +2,10 @@
 import { reactive }     from 'vue'
 import { useAuthStore } from '@/stores'
 import { User }         from '@/types'
-import router           from "@/router";
+import router           from "@/router"
+//import { useRouter }    from 'vue-router'
 
+//const router = useRouter()
 const formState = reactive<User>({
   name: '',
   email: '',
@@ -11,10 +13,11 @@ const formState = reactive<User>({
 })
 
 const login = async (values: User) => {
-  const authStore = await useAuthStore()
+  const authStore = useAuthStore()
 
   try {
     await authStore.login(formState)
+    await router.push({ name: 'home' })
   } catch(error) {
     //setErrors({ apiError: error })
     console.log(error)

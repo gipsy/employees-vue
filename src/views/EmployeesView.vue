@@ -3,9 +3,10 @@
 import { Employee }                        from "@/types"
 import { ColumnsType }                     from "ant-design-vue/es/table"
 import { useAuthStore, useEmployeesStore } from "@/stores"
-import { toRaw, watchEffect }              from "vue"
+import { watchEffect }                     from "vue"
 import { storeToRefs }                     from "pinia"
-import router                              from "@/router";
+import router                              from "@/router"
+import { isLoggedIn }                      from "@/utils/auth"
 
 const employeesStore = useEmployeesStore()
 
@@ -16,10 +17,8 @@ const { user, isAuthenticated } = storeToRefs(authStore)
 //console.log('Auth store:', toRaw(auth.user))
 //console.log('Employees store:', toRaw(employees.employeesStore))
 
-console.log(isAuthenticated.value)
-console.log(user.value)
-if (!isAuthenticated.value) {
-  router.push({ path: '/login' })
+if (!isLoggedIn()) {
+  router.push({ name: 'login' })
 }
 watchEffect(async (onCleanup) => {
   //const { response, cancel } = doAsyncWork(id.value)
@@ -56,7 +55,7 @@ const COLUMNS = [
 ];
 </script>
 
-<template>
+<template v-cloak>
   <a-button
     type="primary"
     @click="gotToAddEmployee"
@@ -76,5 +75,7 @@ const COLUMNS = [
 
 
 <style>
-
+[v-cloak]{
+  display: none;
+}
 </style>
