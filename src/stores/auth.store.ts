@@ -66,10 +66,27 @@ export const useAuthStore = defineStore('authStore', () => {
     }
   }
   
+  async function logout() {
+    //loading.value = true
+    // TODO implement refresh token
+    //const token = localStorage.getItem('token')
+    //const res = await fetch(`${BASE_URL}/user/logout`, {
+    //  method: 'POST',
+    //  headers: {
+    //    'Content-Type': 'application/json'
+    //  },
+    //  body: token
+    //})
+    localStorage.removeItem('token')
+    console.log('logout')
+    //loading.value = false
+  }
+  
   return {
     user,
     loading,
     login,
+    logout,
     register
     //getUserData
   }

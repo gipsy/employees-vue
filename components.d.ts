@@ -36,6 +36,7 @@ declare module '@vue/runtime-core' {
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Layout: typeof import('./src/components/Layout.vue')['default']
+    LoginOutlined: typeof import('@ant-design/icons-vue')['LoginOutlined']
     PlusCircleOutlined: typeof import('@ant-design/icons-vue')['PlusCircleOutlined']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

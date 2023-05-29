@@ -9,28 +9,52 @@
       </router-link>
     </a-space>
 
-    <template v-cloak>
-      <a-space v-if="$route.path !== '/register' && $route.path !== '/login'">
-        <router-link to="/register">
-          <a-button type="default">Register</a-button>
-        </router-link>
-        <router-link to="/login">
-          <a-button type="default">Login</a-button>
-        </router-link>
-      </a-space>
-    </template>
+    <a-space v-if="!isLoggedIn()">
+      <router-link to="/register">
+        <a-button type="text">
+          <template #icon><UserOutlined /></template>
+          Register
+        </a-button>
+      </router-link>
+      <router-link to="/login">
+        <a-button type="text">
+          <template #icon><LoginOutlined /></template>
+          Login
+        </a-button>
+      </router-link>
+    </a-space>
+    <a-space v-else>
+      <a-button
+          type="text"
+          @click="onLogout"
+      >
+        <template #icon><LogoutOutlined /></template>
+        Logout
+      </a-button>
+    </a-space>
   </a-layout-header>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { TeamOutlined } from '@ant-design/icons-vue'
+import { RouterLink }   from 'vue-router'
+import {
+  TeamOutlined,
+  LogoutOutlined,
+  UserOutlined }        from '@ant-design/icons-vue'
+import { useAuthStore } from '@/stores'
+import { isLoggedIn }   from '@/utils/auth'
+import router           from '@/router'
+
+const { logout } = useAuthStore()
+
+const onLogout = async () => {
+  await logout()
+  await router.push({ name: 'login' })
+}
+
 </script>
 
 <style lang="scss">
-[v-cloak]{
-  display: none;
-}
 .header {
   padding: 20px 0;
   display: flex;

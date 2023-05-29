@@ -55,27 +55,25 @@ const COLUMNS = [
 ];
 </script>
 
-<template v-cloak>
-  <a-button
-    type="primary"
-    @click="gotToAddEmployee"
-  >
-    <template #icon>
-      <PlusCircleOutlined />
-    </template>
-    Add
-  </a-button>
-  <br />
-  <a-table
-    :dataSource="employees"
-    :columns="COLUMNS"
-    :loading="loading"
-  />
+<template>
+  <a-space direction="vertical" size="middle" style="width: 100%">
+    <a-button
+      type="primary"
+      @click="gotToAddEmployee"
+    >
+      <template #icon>
+        <PlusCircleOutlined />
+      </template>
+      Add
+    </a-button>
+    <a-table
+      :dataSource="employees"
+      :columns="COLUMNS"
+      :loading="loading"
+    />
+  </a-space>
 </template>
 
 
 <style>
-[v-cloak]{
-  display: none;
-}
 </style>
