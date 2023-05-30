@@ -4,7 +4,7 @@
       <a-form
         :model="formState"
         autocomplete="off"
-        @finish="register"
+        @finish="onFinish"
       >
         <a-form-item>
           <a-input
@@ -39,7 +39,7 @@
           <a-button
             type="primary"
             htmlType="submit"
-            :loading="false"
+            :loading="loading"
           >
             Register
           </a-button>
@@ -49,19 +49,19 @@
         <a-typography-text>
           Already registered? <router-link to="/login">Login</router-link>
         </a-typography-text>
-<!--        <ErrorMessage message={ error } />-->
+<!--        <ErrorMessage message={ errorMsg } />-->
       </a-space>
     </a-card>
   </a-row>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { useAuthStore }  from '@/stores'
-import { User }      from '@/types'
-import router            from "@/router"
+import { reactive }     from 'vue'
+import { useAuthStore } from '@/stores'
+import { User }         from '@/types'
+import router           from "@/router"
 
-type RegisterData = Omit<User, 'id'> & {confirmPassword: string}
+type RegisterData = User & {confirmPassword: string}
 
 const formState = reactive<RegisterData>({
   name: '',
@@ -70,16 +70,12 @@ const formState = reactive<RegisterData>({
   confirmPassword: '',
 })
 
-const register = async (values: RegisterData) => {
-  const authStore = useAuthStore()
+const { register, loading, errorMsg } = useAuthStore()
 
-  try {
-    await authStore.register(formState)
-    await router.push({ path: '/' })
-  } catch(error) {
-    //setErrors({ apiError: error })
-    console.log(error)
-  }
+const onFinish = async (values: RegisterData) => {
+  await register(formState)
+
+  await router.push({ path: '/' })
 }
 </script>
 

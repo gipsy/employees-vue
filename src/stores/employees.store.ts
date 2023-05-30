@@ -1,17 +1,26 @@
-import { computed, ref, toRefs } from 'vue'
-import { defineStore }           from 'pinia'
+import { reactive, toRef, toRefs } from 'vue'
+import { defineStore }             from 'pinia'
 import { BASE_URL }              from '../constants'
-import { Employee }              from "@/types";
+import { Employee }              from "@/types"
+
+interface InitialState {
+  employees: Employee[] | null,
+  loading: boolean,
+  errorMsg: string,
+}
+
+const initialState: InitialState = {
+  employees: [],
+  loading: false,
+  errorMsg: ''
+}
 
 export const useEmployeesStore = defineStore('employeesStore',() => {
-  const employees = ref([])
-  const loading = ref(false)
-  const error = ref('')
-  
+  const state = reactive<InitialState>(initialState)
   
   async function getAllEmployees() {
     try {
-      loading.value = true
+      state.loading = true
       const response = await fetch(`${BASE_URL}/employees`, {
         method: 'GET',
         headers: {
@@ -19,28 +28,35 @@ export const useEmployeesStore = defineStore('employeesStore',() => {
         }
       })
       const data = await response.json()
-      if (Array.isArray(data)) {
-        employees.value = data
-      } else {
-        employees.value = []
-      }
-      loading.value = false
+      state.employees = data
     } catch(error) {
-      console.log(error)
-      loading.value = false
+      state.errorMsg = error.message
+    } finally {
+      state.loading = false
     }
   }
   
   async function addEmployee(formData: Employee) {
-    await fetch(`${BASE_URL}/employees/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify( formData )
-    })
+    try {
+      state.loading = true
+      await fetch(`${BASE_URL}/employees/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify( formData )
+      })
+    } catch(error) {
+      state.errorMsg = error.message
+    } finally {
+      state.loading = false
+    }
   }
   
-  return { employees, getAllEmployees, addEmployee, loading }
+  return {
+    state,
+    getAllEmployees,
+    addEmployee
+  }
 })

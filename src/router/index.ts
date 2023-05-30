@@ -14,9 +14,6 @@ const router = createRouter({
     {
       path: '/employee/:id',
       name: 'employee',
-      // route level code-splitting
-      // this generates a separate chunk (Employee.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('@/views/EmployeeView.vue'),
       meta: { requiresAuth: true },
     },
@@ -51,15 +48,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-// Redirect to login
-//router.beforeEach(async (to, from) => {
-//  if (to.meta.requiresAuth && !isLoggedIn() && to.name !== "Login") {
-//    return { name: "Login" };
-//  }
-//  if (isLoggedIn() && to.name === "Login") {
-//    return { name: from.name };
-//  }
-//});
 
 export default router
